@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Box {
+  id         Int       @id @default(autoincrement())
+  barcode    String    @unique
+  label      String?
+  location   String
+  importDate DateTime
+  notes      String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  items      Item[]
+}
+
+model Item {
+  id        Int       @id @default(autoincrement())
+  boxId     Int
+  name      String
+  sku       String?
+  quantity  Int
+  unit      String?
+  removedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  box       Box       @relation(fields: [boxId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+}
+
+model ActivityLog {
+  id        Int      @id @default(autoincrement())
+  type      String
+  details   Json
+  createdAt DateTime @default(now())
+}
